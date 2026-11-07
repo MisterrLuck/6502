@@ -9,4 +9,6 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(6502 src/main.cpp
         src/mos_6502.cpp
         include/mos_6502.hpp
+
+        src/opcodes.cpp
 	)

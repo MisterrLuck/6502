@@ -4,12 +4,46 @@
 #define MEM_SIZE 65536
 #define STACK_ADDRESS_OFFSET 0x0100
 
+
+enum class Flag
+{
+	Carry,
+	Zero,
+	Interrupt,
+	Decimal,
+	Break,
+	NULL,	// Only used as a space in the Status register bit sequence
+	Overflow,
+	Negative
+};
+
 class MOS6502
 {
 public:
 	MOS6502();
 
+	void cycle();
+
 private:
+	uint8_t fetch();
+	uint16_t fetchWord();
+	uint16_t readWord(uint16_t address);
+	
+	// Address Modes
+	uint8_t indexZeroPage(uint8_t address, uint8_t offset);
+	uint16_t indexAbsolute(uint16_t address, uint8_t offset);
+
+	uint16_t xIndirect(uint8_t address);
+	uint16_t yIndirect(uint8_t address);
+
+	// Flag Functions
+	void updateNegativeFlag(uint8_t value);
+	void updateZeroFlag(uint8_t value);
+
+	void setFlag(Flag f);
+	void clearFlag(Flag f);
+
+
 	// A -> Accumulator: Arithmatic and Logical output
 	// X, Y -> General Use: X Can get a copy of the stack pointer
 	// PC -> Program Counter
@@ -35,3 +69,5 @@ private:
 	
 	// Stack pointer decrements down the stack
 };
+
+
