@@ -13,8 +13,8 @@ MOS6502::MOS6502()
 
 uint8_t MOS6502::fetch()
 {
-	uint8_t byte = memory[PC];
-	PC += 2;
+	uint8_t byte = memory[PC++];
+	// PC += 2;
 	return byte;
 }
 

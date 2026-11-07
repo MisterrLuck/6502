@@ -12,10 +12,12 @@ using nlohmann::json, std::cout, std::cin, std::format;
 
 void loadMemory(MOS6502 &mos, const json &mem);
 int compareMemory(MOS6502 &mos, const json &mem);
+void printTest(const json &test);
 
 
 int main()
 {
+	cout << "Opcode to test: 0x";
 	char _0, _1;
 	cin >> _0;
 	cin >> _1;
@@ -26,11 +28,18 @@ int main()
 
 	MOS6502 mos;
 
+	printTest(test);
+
 	loadMemory(mos, test["initial"]);
 	if (compareMemory(mos, test["initial"]))
+	{
 		cout << "Didn't load properly\n";
+		return -1;
+	}
 
 	mos.cycle();
+
+	cout << "Compared to Target\n";
 	int result = compareMemory(mos, test["final"]);
 
 	if (!result)
@@ -43,7 +52,7 @@ int main()
 
 void loadMemory(MOS6502 &mos, const json &mem)
 {
-	mos.PC = mem["pc"].get<uint8_t>();
+	mos.PC = mem["pc"].get<uint16_t>();
 	mos.S = mem["s"].get<uint8_t>();
 	mos.A = mem["a"].get<uint8_t>();
 	mos.X = mem["x"].get<uint8_t>();
@@ -59,7 +68,7 @@ int compareMemory(MOS6502 &mos, const json &mem)
 {
 	int count = 0;
 
-	if (mos.PC != mem["pc"].get<uint8_t>())
+	if (mos.PC != mem["pc"].get<uint16_t>())
 	{
 		count++;
 		cout << "PC issue\n";
@@ -102,4 +111,12 @@ int compareMemory(MOS6502 &mos, const json &mem)
 	}
 
 	return count;
+}
+
+void printTest(const json &test)
+{
+	cout << "Initial State\n";
+	cout << test["initial"].dump(4) << "\n";
+	cout << "Target State\n";
+	cout << test["final"].dump(4) << "\n";
 }

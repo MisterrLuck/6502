@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-#define MEM_SIZE 65536
+#define MEM_SIZE 0xFFFF + 1
 #define STACK_ADDRESS_OFFSET 0x0100
 
 
