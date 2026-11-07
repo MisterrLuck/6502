@@ -12,7 +12,7 @@ enum class Flag
 	Interrupt,
 	Decimal,
 	Break,
-	NULL,	// Only used as a space in the Status register bit sequence
+	NULL_FLAG,	// Only used as a space in the Status register bit sequence
 	Overflow,
 	Negative
 };
@@ -58,6 +58,7 @@ private:
 		// Zero: If the last operation was zero
 		// Carry: Set if last operation caused an overflow or underflow
 
+public:
 	uint8_t X, Y, A, S, P;
 	uint16_t PC;
 

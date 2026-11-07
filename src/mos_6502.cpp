@@ -1,4 +1,4 @@
-#include "mos_6502.hpp"
+#include <mos_6502.hpp>
 
 MOS6502::MOS6502()
 {

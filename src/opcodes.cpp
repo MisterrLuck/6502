@@ -1,4 +1,4 @@
-#include "mos_6502.hpp"
+#include <mos_6502.hpp>
 
 void MOS6502::cycle()
 {

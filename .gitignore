@@ -1,2 +1,4 @@
 build/
 checklist*
+include/nlohmann
+tests/sst
