@@ -4,9 +4,6 @@
 #include <vector>
 
 #include <nlohmann/json.hpp>
-// #include <nlohmann/json_literals.hpp>
-// #include <nlohmann/json_fwd.hpp>
-// #include <nlohmann/json_view.hpp>
 #include <mos_6502.hpp>
 using nlohmann::json, std::cout, std::cin, std::format, std::vector;
 
@@ -68,8 +65,19 @@ int main()
 
 		if (answer == 'y')
 		{
+			int start = bad_tests[0];
+			int end = bad_tests[0]-1;
 			for (int bad : bad_tests)
-				cout << format("Test Number {} failed\n", bad);
+			{
+				if (bad == end+1)
+					end++;
+				else
+				{
+					cout << format("Range {}-{} failed\n", start, end);
+					start = bad;
+					end = bad;
+				}
+			}
 		}
 	}
 
@@ -129,7 +137,7 @@ int compareMemory(MOS6502 &mos, const json &mem)
 	if (mos.P != target_p)
 	{
 		count++;
-		cout << format("P: 0b{:08b} != 0b{:08b}, {} != {}\n", mos.P, target_p, mos.P, target_p);
+		cout << format("P: 0b{:08b} !=\n   0b{:08b}, {} != {}\n", mos.P, target_p, mos.P, target_p);
 	}
 
 	for (const auto& i : mem["ram"])

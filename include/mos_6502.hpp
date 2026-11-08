@@ -24,10 +24,10 @@ public:
 
 	void cycle();
 
-private:
+// private:
 	uint8_t fetch();
 	uint16_t fetchWord();
-	uint16_t readWord(uint16_t address);
+	uint16_t readWord(uint16_t address, bool zero_page=false);
 	
 	// Address Modes
 	uint8_t indexZeroPage(uint8_t address, uint8_t offset);

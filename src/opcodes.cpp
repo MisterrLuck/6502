@@ -2,6 +2,7 @@
 #include <format>
 
 #include <mos_6502.hpp>
+using std::cout, std::format;
 
 void MOS6502::cycle()
 {
@@ -227,7 +228,7 @@ void MOS6502::cycle()
 				case 0x01:	// 0xB1 : LDA ($nn), Y : 2 bytes, 5+p cycles
 				{
 					num_cycles = 5;
-					uint8_t address = yIndirect(fetch());
+					uint16_t address = yIndirect(fetch());
 					A = memory[address];
 
 					updateZeroFlag(A);

@@ -1,5 +1,9 @@
 #include <mos_6502.hpp>
 
+#include <iostream>
+#include <format>
+using std::cout, std::format;
+
 MOS6502::MOS6502()
 {
 	S = 0xFF;
@@ -23,9 +27,12 @@ uint16_t MOS6502::fetchWord()
 	return fetch() | (fetch() << 8);
 }
 
-uint16_t MOS6502::readWord(uint16_t address)
+// HACK: Idk if having the bool is fine
+uint16_t MOS6502::readWord(uint16_t address, bool zero_page)
 {
-	return memory[address] | (memory[address] << 8);
+	if (zero_page)
+		return memory[address & 0xFF] | (memory[(address+1) & 0xFF] << 8);
+	return memory[address] | (memory[address+1] << 8);
 }
 
 
@@ -43,12 +50,12 @@ uint16_t MOS6502::indexAbsolute(uint16_t address, uint8_t offset)
 uint16_t MOS6502::xIndirect(uint8_t address)
 {
 	address = indexZeroPage(address, X);
-	return readWord(address);
+	return readWord(address, true);
 }
 
 uint16_t MOS6502::yIndirect(uint8_t address)
 {
-	uint16_t ptr = readWord(address);
+	uint16_t ptr = readWord(address, true);
 	return indexAbsolute(ptr, Y);
 }
 
@@ -56,7 +63,7 @@ uint16_t MOS6502::yIndirect(uint8_t address)
 // Flag Functions
 void MOS6502::updateNegativeFlag(uint8_t value)
 {
-	if ((value & 0x80) >> 7)
+	if (value >> 7)
 		setFlag(Flag::Negative);
 	else
 		clearFlag(Flag::Negative);
