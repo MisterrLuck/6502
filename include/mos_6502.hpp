@@ -24,7 +24,7 @@ public:
 
 	void cycle();
 
-// private:
+private:
 	uint8_t fetch();
 	uint16_t fetchWord();
 	uint16_t readWord(uint16_t address, bool zero_page=false);

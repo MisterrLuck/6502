@@ -78,6 +78,8 @@ int main()
 					end = bad;
 				}
 			}
+			if (end == bad_tests.size()-1)
+				cout << format("Range {}-{} failed\n", start, end);
 		}
 	}
 
