@@ -15,72 +15,84 @@ void printTest(const json &test);
 
 int main()
 {
-	cout << "Opcode to test: 0x";
-	char _0, _1;
-	cin >> _0;
-	cin >> _1;
+	int opcode;
+	MOS6502 mos;
 
-	std::ifstream file(format("../tests/sst/{}{}.json", _0, _1));
-	json all_tests = json::parse(file);
+	vector<int> bad_opcodes;
 
-	int count = 0;
-	vector<int> bad_tests;
-
-	for (const auto& test : all_tests)
+	for (opcode = 0; opcode <= 0xFF; opcode++)
 	{
-		MOS6502 mos;
+		std::ifstream file(format("../tests/sst/{:x}.json", opcode));
+		if (!file.is_open())
+			continue;
 
-		cout << format("Run {}\n", count);
+		json all_tests = json::parse(file);
 
-		loadMemory(mos, test["initial"]);
-		if (compareMemory(mos, test["initial"]))
-			cout << "Didn't load properly\n";
-		else
+		int count = 0;
+		vector<int> bad_tests;
+
+		for (const auto& test : all_tests)
 		{
+			// cout << format("Run {}\n", count);
+
+			loadMemory(mos, test["initial"]);
+			if (compareMemory(mos, test["initial"]))
+			{
+				cout << "Didn't load properly\n";
+				continue;
+			}
+
 			mos.cycle();
 
-			cout << "Compared to Target\n";
 			int result = compareMemory(mos, test["final"]);
 
-			if (!result)
-				cout << "Run Successful\n";
-			else
+			// if (!result)
+				// cout << "Run Successful\n";
+			if (result)
 			{
 				bad_tests.push_back(count);
-				cout << format("Error: Count {}\n", result);
+				// cout << format("Error: Count {}\n", result);
 			}
 
 			count++;
 		}
+
+		// cout << format("\nResults from opcode 0x{}{} test\n", _0, _1);
+		if (!bad_tests.size())
+			cout << format("0x{:x}: Completely Successful Run\n", opcode);
+		else
+		{
+			cout << format("0x{:x}: {} tests failed\n", opcode, bad_tests.size());
+			bad_opcodes.push_back(opcode);
+			// cout << format("{} tests failed. Do you wish to see all? (y/N) ", bad_tests.size());
+			// char answer;
+			// cin >> answer;
+			//
+			// if (answer == 'y')
+			// {
+			// 	int start = bad_tests[0];
+			// 	int end = bad_tests[0]-1;
+			// 	for (int bad : bad_tests)
+			// 	{
+			// 		if (bad == end+1)
+			// 			end++;
+			// 		else
+			// 		{
+			// 			cout << format("Range {}-{} failed\n", start, end);
+			// 			start = bad;
+			// 			end = bad;
+			// 		}
+			// 	}
+			// 	if (end == bad_tests.size()-1)
+			// 		cout << format("Range {}-{} failed\n", start, end);
+			// }
+		}
 	}
 
-	cout << format("\nResults from opcode 0x{}{} test\n", _0, _1);
-	if (!bad_tests.size())
-		cout << "Completely Successful Run\n";
-	else
+	cout << "\nFinal Results\n";
+	for (int bad_opcode : bad_opcodes)
 	{
-		cout << format("{} tests failed. Do you wish to see all? (y/N) ", bad_tests.size());
-		char answer;
-		cin >> answer;
-
-		if (answer == 'y')
-		{
-			int start = bad_tests[0];
-			int end = bad_tests[0]-1;
-			for (int bad : bad_tests)
-			{
-				if (bad == end+1)
-					end++;
-				else
-				{
-					cout << format("Range {}-{} failed\n", start, end);
-					start = bad;
-					end = bad;
-				}
-			}
-			if (end == bad_tests.size()-1)
-				cout << format("Range {}-{} failed\n", start, end);
-		}
+		cout << format("{:x}: Failed\n", bad_opcode);
 	}
 
 	return 0;
@@ -96,7 +108,6 @@ void loadMemory(MOS6502 &mos, const json &mem)
 	mos.P = mem["p"].get<uint8_t>();
 
 	for (const auto &i : mem["ram"])
-		// mos.memory[static_cast<int>(i[0])] = static_cast<int>(i[1]);
 		mos.memory[i[0].get<uint16_t>()] = i[1].get<uint8_t>();
 }
 
@@ -114,32 +125,32 @@ int compareMemory(MOS6502 &mos, const json &mem)
 	if (mos.PC != target_pc)
 	{
 		count++;
-		cout << format("PC: 0x{:x} != 0x{:x}, {} != {}\n", mos.PC, target_pc, mos.PC, target_pc);
+		// cout << format("PC: 0x{:x} != 0x{:x}, {} != {}\n", mos.PC, target_pc, mos.PC, target_pc);
 	}
 	if (mos.S != target_s)
 	{
 		count++;
-		cout << format("S: 0x{:x} != 0x{:x}, {} != {}\n", mos.S, target_s, mos.S, target_s);
+		// cout << format("S: 0x{:x} != 0x{:x}, {} != {}\n", mos.S, target_s, mos.S, target_s);
 	}
 	if (mos.A != target_a)
 	{
 		count++;
-		cout << format("A: 0x{:x} != 0x{:x}, {} != {}\n", mos.A, target_a, mos.A, target_a);
+		// cout << format("A: 0x{:x} != 0x{:x}, {} != {}\n", mos.A, target_a, mos.A, target_a);
 	}
 	if (mos.X != target_x)
 	{
 		count++;
-		cout << format("X: 0x{:x} != 0x{:x}, {} != {}\n", mos.X, target_x, mos.X, target_x);
+		// cout << format("X: 0x{:x} != 0x{:x}, {} != {}\n", mos.X, target_x, mos.X, target_x);
 	}
 	if (mos.Y != target_y)
 	{
 		count++;
-		cout << format("Y: 0x{:x} != 0x{:x}, {} != {}\n", mos.Y, target_y, mos.Y, target_y);
+		// cout << format("Y: 0x{:x} != 0x{:x}, {} != {}\n", mos.Y, target_y, mos.Y, target_y);
 	}
 	if (mos.P != target_p)
 	{
 		count++;
-		cout << format("P: 0b{:08b} !=\n   0b{:08b}, {} != {}\n", mos.P, target_p, mos.P, target_p);
+		// cout << format("P: 0b{:08b} !=\n   0b{:08b}, {} != {}\n", mos.P, target_p, mos.P, target_p);
 	}
 
 	for (const auto& i : mem["ram"])
@@ -148,7 +159,7 @@ int compareMemory(MOS6502 &mos, const json &mem)
 		uint8_t value = i[1].get<uint8_t>();
 		if (mos.memory[address] != value)
 		{
-			cout << format("0x{:x} ({}): 0x{:x} != 0x{:x}, {} != {}\n", address, address, mos.memory[address], value, mos.memory[address], value);
+			// cout << format("0x{:x} ({}): 0x{:x} != 0x{:x}, {} != {}\n", address, address, mos.memory[address], value, mos.memory[address], value);
 			count++;
 		}
 	}
