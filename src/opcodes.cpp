@@ -105,6 +105,15 @@ void MOS6502::cycle()
 					updateNegativeFlag(Y);
 				}
 				break;
+				case 0x0A:	// 0x8A : TXA : 2 cycles
+				{
+					num_cycles = 2;
+					A = X;
+
+					updateZeroFlag(A);
+					updateNegativeFlag(A);
+				}
+				break;
 				case 0x0C:	// 0x8C : STY $nnnn : 3 bytes, 4 cycles
 				{
 					num_cycles = 4;
@@ -161,11 +170,26 @@ void MOS6502::cycle()
 					memory[address] = X;
 				}
 				break;
+				case 0x08:	// 0x98 : TYA : 2 cycles
+				{
+					num_cycles = 2;
+					A = Y;
+
+					updateZeroFlag(A);
+					updateNegativeFlag(A);
+				}
+				break;
 				case 0x09:	// 0x99 : STA $nnnn, Y : 3 bytes, 5 cycles
 				{
 					num_cycles = 5;
 					uint16_t address = indexAbsolute(fetchWord(), Y);
 					memory[address] = A;
+				}
+				break;
+				case 0x0A:	// 0x9A : TXS : 2 cycles
+				{
+					num_cycles = 2;
+					S = X;
 				}
 				break;
 				case 0x0D:	// 0x9D : STA $nnnn, X : 3 bytes, 5 cycles
@@ -240,6 +264,15 @@ void MOS6502::cycle()
 					updateNegativeFlag(X);
 				}
 				break;
+				case 0x08:	// 0xA8 : TAY : 2 cycles
+				{
+					num_cycles = 2;
+					Y = A;
+
+					updateZeroFlag(Y);
+					updateNegativeFlag(Y);
+				}
+				break;
 				case 0x09:	// 0xA9 : LDA #$nn : 2 bytes, 2 cycles
 				{
 					num_cycles = 2;
@@ -247,6 +280,15 @@ void MOS6502::cycle()
 
 					updateZeroFlag(A);
 					updateNegativeFlag(A);
+				}
+				break;
+				case 0x0A:	// 0xAA : TAX : 2 cycles
+				{
+					num_cycles = 2;
+					X = A;
+
+					updateZeroFlag(X);
+					updateNegativeFlag(X);
 				}
 				break;
 				case 0x0C:	// 0xAC : LDY $nnnn : 3 bytes, 4 cycles
@@ -340,6 +382,15 @@ void MOS6502::cycle()
 
 					updateZeroFlag(A);
 					updateNegativeFlag(A);
+				}
+				break;
+				case 0x0A:	// 0xBA : TSX : 2 cycles
+				{
+					num_cycles = 2;
+					X = S;
+
+					updateZeroFlag(X);
+					updateNegativeFlag(X);
 				}
 				break;
 				case 0x0C:	// 0xBC : LDY $nnnn, X : 3 bytes, 4+p cycles
